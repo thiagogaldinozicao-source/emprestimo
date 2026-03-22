@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Simulação Empréstimo</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --yellow: #C9A84C; --yellow-light: #E2C06A;
+  --yellow-bg: rgba(201,168,76,0.08);
+  --bg: #ffffff; --border: #e0e0e0; --border-strong: #c5c5c5;
+  --text: #1a1a1a; --muted: #888888; --red: #e05252;
+}
+body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; min-height: 100vh; max-width: 480px; margin: 0 auto; }
+
+/* HEADER */
+header { padding: 18px 20px 6px; display: flex; align-items: flex-start; justify-content: space-between; }
+.logo-wrap { display: flex; flex-direction: column; }
+.logo-title { display: flex; align-items: center; gap: 8px; }
+.logo-icon { font-size: 22px; }
+.logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--yellow); letter-spacing: 2px; line-height: 1; }
+.logo-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.header-btns { display: flex; gap: 8px; margin-top: 2px; }
+.hbtn { width: 44px; height: 44px; border-radius: 12px; border: 2px solid var(--border-strong); background: #fff; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.hbtn:hover { border-color: var(--yellow); background: var(--yellow-bg); }
+
+.divider { height: 2px; background: linear-gradient(to right, var(--yellow), var(--yellow-light), transparent); margin: 10px 0 20px; }
+
+/* INPUTS */
+.section { padding: 0 16px; margin-bottom: 16px; }
+.field-label { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--yellow); margin-bottom: 8px; }
+.field-input { width: 100%; padding: 16px 18px; border: 2px solid var(--border); border-radius: 14px; background: #fafafa; font-family: 'Barlow', sans-serif; font-size: 18px; font-weight: 600; color: var(--text); outline: none; transition: border-color 0.2s; -webkit-appearance: none; }
+.field-input::placeholder { color: #ccc; font-weight: 400; }
+.field-input:focus { border-color: var(--yellow); background: #fff; }
+
+/* RESULT CARD */
+.result-card { margin: 0 16px 16px; border: 2px solid var(--yellow); border-radius: 16px; overflow: hidden; }
+.rc-header { background: #fff; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+.rc-header-left { display: flex; flex-direction: column; }
+.rc-header-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+.rc-header-nome { font-size: 17px; font-weight: 900; color: var(--text); text-transform: uppercase; letter-spacing: 0.5px; }
+.rc-header-icon { font-size: 26px; }
+
+.rc-valor-row { background: #fffdf5; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+.rv-left { display: flex; align-items: center; gap: 8px; }
+.rv-icon { font-size: 18px; }
+.rv-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+.rv-val { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--yellow); letter-spacing: 1px; }
+.rc-disp-badge { background: var(--yellow); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 1px; padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
+
+/* TABELA */
+.rc-table { width: 100%; border-collapse: collapse; }
+.rc-table thead tr { background: #f5f5f5; }
+.rc-table thead th { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--yellow); padding: 9px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+.rc-table thead th:not(:first-child) { text-align: right; }
+.rc-table tbody tr { border-bottom: 1px solid #f0f0f0; transition: background 0.12s; }
+.rc-table tbody tr:last-child { border-bottom: none; }
+.rc-table tbody tr:hover { background: #fffdf5; }
+.rc-table tbody td { padding: 10px 14px; font-size: 13px; }
+.rc-table tbody td:not(:first-child) { text-align: right; }
+.td-parc { font-family: 'Bebas Neue', sans-serif; font-size: 16px; color: var(--yellow); letter-spacing: 0.5px; }
+.td-vparcela { color: var(--muted); font-weight: 600; }
+.td-total { font-weight: 700; color: var(--text); }
+.td-juros { font-size: 12px; color: var(--red); font-weight: 600; }
+
+.rc-footer { background: #fffdf5; border-top: 1px solid var(--border); padding: 11px 16px; display: flex; align-items: center; justify-content: space-between; }
+.rf-left { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text); }
+.rf-right { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--yellow); }
+
+/* BOTÕES */
+.action-btns { padding: 0 16px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.abtn { width: 100%; padding: 15px; border-radius: 14px; border: none; font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 2px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.15s; }
+.abtn-primary { background: var(--yellow); color: #fff; }
+.abtn-primary:hover { background: var(--yellow-light); }
+.abtn-secondary { background: #fff; color: var(--text); border: 2px solid var(--border-strong); }
+.abtn-secondary:hover { border-color: var(--yellow); color: var(--yellow); }
+
+/* DICAS */
+.tips-box { margin: 0 16px 32px; border: 1.5px solid var(--border); border-radius: 14px; padding: 14px 16px; }
+.tips-box p { font-size: 12px; color: var(--muted); line-height: 1.6; display: flex; align-items: flex-start; gap: 6px; }
+.tips-box p + p { margin-top: 6px; }
+.tips-box .ti { color: var(--yellow); font-size: 14px; flex-shrink: 0; }
+.tips-box strong { color: var(--text); font-weight: 700; }
+
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; align-items: flex-end; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: #fff; border-radius: 24px 24px 0 0; padding: 24px 20px 40px; width: 100%; max-width: 480px; animation: slideUp 0.22s ease; }
+@keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.modal h3 { font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--yellow); letter-spacing: 2px; margin-bottom: 4px; }
+.modal .modal-sub { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+.modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.mbtn { padding: 16px 12px; border-radius: 14px; border: 2px solid var(--border); background: #fafafa; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; font-family: 'Barlow', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); transition: all 0.15s; }
+.mbtn:hover { border-color: var(--yellow); color: var(--yellow); background: var(--yellow-bg); }
+.mbtn .mi { font-size: 26px; }
+.mbtn-close { width: 100%; padding: 13px; border-radius: 12px; border: none; background: #f0f0f0; color: var(--muted); font-family: 'Barlow', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-wrap">
+    <div class="logo-title">
+      <span class="logo-icon">💳</span>
+      <span class="logo-text">SIMULAÇÃO EMPRÉSTIMO</span>
+    </div>
+    <div class="logo-sub">Digite o valor → salve ou compartilhe a tabela</div>
+  </div>
+  <div class="header-btns">
+    <button class="hbtn" onclick="salvarImagem()" title="Salvar imagem">📸</button>
+    <button class="hbtn" onclick="abrirModal()" title="Compartilhar">💬</button>
+  </div>
+</header>
+
+<div class="divider"></div>
+
+<div class="section">
+  <div class="field-label">💰 Valor que o cliente quer receber (R$)</div>
+  <input class="field-input" id="valorInput" type="number" placeholder="1000" min="1" step="1" oninput="calcular()">
+</div>
+
+<div id="resultArea"></div>
+
+<div class="action-btns" id="actionBtns" style="display:none">
+  <button class="abtn abtn-primary" onclick="salvarImagem()">📸 &nbsp;SALVAR / COMPARTILHAR IMAGEM</button>
+  <button class="abtn abtn-secondary" onclick="copiarWhats()">📋 &nbsp;COPIAR TEXTO PARA WHATSAPP</button>
+</div>
+
+<div class="tips-box" id="tipsBox" style="display:none">
+  <p><span class="ti">💡</span><span><strong>iPhone:</strong> tire um print de tela → compartilhe direto no WhatsApp como foto!</span></p>
+  <p><span class="ti">💡</span><span><strong>Android:</strong> Vol. Baixo + Ligar/Desligar → envie pelo WhatsApp como imagem.</span></p>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="fecharFora(event)">
+  <div class="modal">
+    <h3>Compartilhar Simulação</h3>
+    <p class="modal-sub">Escolha como deseja enviar para o cliente</p>
+    <div class="modal-grid">
+      <button class="mbtn" onclick="compartilharWhats()"><span class="mi">💬</span>WhatsApp</button>
+      <button class="mbtn" onclick="copiarWhats()"><span class="mi">📋</span>Copiar Texto</button>
+      <button class="mbtn" onclick="salvarImagem()"><span class="mi">📸</span>Salvar Imagem</button>
+      <button class="mbtn" onclick="compartilharNativo()"><span class="mi">📤</span>Compartilhar</button>
+    </div>
+    <button class="mbtn-close" onclick="fecharModal()">Fechar</button>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// TAXAS REAIS — extraídas diretamente da foto enviada
+// Fórmula: parcela = cobrado * FATOR[n]
+//          cobrado = recebido * 1.20
+//          total   = parcela * n
+//          juros   = total - recebido
+//
+// Verificações:
+//   recebido=1000  → cobrado=1200  → 12x = R$100,00 ✅
+//   recebido=1050  → cobrado=1260  → 12x = R$105,00 ✅
+//   recebido=10000 → cobrado=12000 → 12x = R$1000,00 ✅
+// ─────────────────────────────────────────────────────────────
+const FATORES = {
+   1: 0.92358333,
+   2: 0.46591667,
+   3: 0.31276667,
+   4: 0.23619167,
+   5: 0.19026667,
+   6: 0.15964167,
+   7: 0.13807500,
+   8: 0.12164167,
+   9: 0.10886667,
+  10: 0.09865000,
+  11: 0.09029167,
+  12: 0.08333333,   // 1/12 exato → sempre dá número proporcional
+  13: 0.07815833,
+  14: 0.07307500,
+  15: 0.06866667,
+  16: 0.06481667,
+  17: 0.06141667,
+  18: 0.05840833,
+};
+
+const fmt = v => v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+let valAtual = 0, nomeAtual = '';
+
+function calcular() {
+  const val  = parseFloat(document.getElementById('valorInput').value) || 0;
+  valAtual = val;
+
+  const area = document.getElementById('resultArea');
+  const btns = document.getElementById('actionBtns');
+  const tips = document.getElementById('tipsBox');
+
+  if (!val || val <= 0) {
+    area.innerHTML = '';
+    btns.style.display = 'none';
+    tips.style.display = 'none';
+    return;
+  }
+
+  const cobrado = val * 1.20;
+  let rows = '';
+
+  for (let n = 1; n <= 18; n++) {
+    const parcela = cobrado * FATORES[n];
+    const total   = parcela * n;
+    const juros   = total - val;
+    rows += `<tr>
+      <td class="td-parc">${n}x</td>
+      <td class="td-vparcela">R$ ${fmt(parcela)}</td>
+      <td class="td-total">R$ ${fmt(total)}</td>
+      <td class="td-juros">+R$ ${fmt(juros)}</td>
+    </tr>`;
+  }
+
+  area.innerHTML = `
+  <div class="result-card" id="resultCard">
+    <div class="rc-valor-row">
+      <div class="rv-left">
+        <span class="rv-icon">💳</span>
+        <div>
+          <div class="rv-label">Parcelando</div>
+          <div class="rv-val">R$ ${fmt(val)}</div>
+        </div>
+      </div>
+      <span class="rc-disp-badge">18X DISPONÍVEL</span>
+    </div>
+    <table class="rc-table">
+      <thead><tr>
+        <th>Parc.</th><th>Valor/Parc.</th><th>Total</th><th>Juros</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="rc-footer">
+      <span class="rf-left">📲 Fale para fechar negócio</span>
+      <span class="rf-right">🏆 Melhor taxa</span>
+    </div>
+  </div>`;
+
+  btns.style.display = 'flex';
+  tips.style.display = 'block';
+}
+
+function gerarTexto() {
+  if (!valAtual) return '';
+  const cobrado = valAtual * 1.20;
+
+  const linhas = [];
+  for (let n = 1; n <= 18; n++) {
+    const p = cobrado * FATORES[n];
+    const total = p * n;
+    linhas.push({ n, p: fmt(p), total: fmt(total) });
+  }
+
+  const maxP     = Math.max(...linhas.map(l => l.p.length));
+  const maxTotal = Math.max(...linhas.map(l => l.total.length));
+
+  let t = '*💳 SIMULAÇÃO DE EMPRÉSTIMO*\n\n';
+  t += '*💵 Valor recebido: R$ ' + fmt(valAtual) + '*\n\n';
+  t += '```\n';
+  t += 'Px.  ' + 'Parcela'.padStart(maxP) + '  ' + 'Total'.padStart(maxTotal) + '\n';
+  t += '─'.repeat(5 + maxP + 2 + maxTotal) + '\n';
+  for (const { n, p, total } of linhas) {
+    const px = String(n).padStart(2,'0') + 'x';
+    t += px + '   ' + p.padStart(maxP) + '  │  ' + total.padStart(maxTotal) + '\n';
+  }
+  t += '```';
+  return t;
+}
+
+function compartilharWhats() {
+  window.open(`https://wa.me/?text=${encodeURIComponent(gerarTexto())}`, '_blank');
+  fecharModal();
+}
+
+function copiarWhats() {
+  const txt = gerarTexto();
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(txt).then(() => { alert('✅ Texto copiado! Cole no WhatsApp.'); fecharModal(); });
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = txt; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    alert('✅ Texto copiado!'); fecharModal();
+  }
+}
+
+function salvarImagem() {
+  alert('📸 Para salvar a tela:\n\n• iPhone: Botão Lateral + Volume +\n• Android: Vol. Baixo + Ligar/Desligar\n\nDepois envie a foto direto no WhatsApp!');
+}
+
+function compartilharNativo() {
+  if (navigator.share) {
+    navigator.share({ title: 'Simulação Empréstimo', text: gerarTexto() }).then(() => fecharModal());
+  } else { copiarWhats(); }
+}
+
+function abrirModal()  { document.getElementById('modalOverlay').classList.add('open'); }
+function fecharModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+function fecharFora(e) { if (e.target === document.getElementById('modalOverlay')) fecharModal(); }
+</script>
+</body>
+</html>
