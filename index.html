@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -26,62 +25,61 @@ header { padding: 18px 20px 6px; display: flex; align-items: center; justify-con
 .logo-wrap { display: flex; flex-direction: column; }
 .logo-title { display: flex; align-items: center; gap: 8px; }
 .logo-icon { font-size: 22px; }
-.logo-text { font-family: ‘Bebas Neue’, sans-serif; font-size: 28px; color: var(–yellow); letter-spacing: 2px; line-height: 1; }
-.logo-sub { font-size: 11px; color: var(–muted); margin-top: 2px; }
-.hbtn { width: 44px; height: 44px; border-radius: 12px; border: 2px solid var(–border-strong); background: #fff; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0; margin-left: 12px; }
-.hbtn:hover { border-color: var(–yellow); background: var(–yellow-bg); }
+.logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--yellow); letter-spacing: 2px; line-height: 1; white-space: nowrap; }
+.logo-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.hbtn { width: 44px; height: 44px; border-radius: 12px; border: 2px solid var(--border-strong); background: #fff; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0; margin-left: 12px; }
+.hbtn:hover { border-color: var(--yellow); background: var(--yellow-bg); }
 
-.divider { height: 2px; background: linear-gradient(to right, var(–yellow), var(–yellow-light), transparent); margin: 10px 0 20px; }
+.divider { height: 2px; background: linear-gradient(to right, var(--yellow), var(--yellow-light), transparent); margin: 10px 0 20px; }
 
 /* INPUT */
 .section { padding: 0 16px; margin-bottom: 16px; }
-.field-label { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(–yellow); margin-bottom: 8px; }
+.field-label { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--yellow); margin-bottom: 8px; }
 .input-row { display: flex; align-items: center; gap: 10px; }
-.field-input { flex: 1; padding: 16px 18px; border: 2px solid var(–border); border-radius: 14px; background: #fafafa; font-family: ‘Barlow’, sans-serif; font-size: 18px; font-weight: 600; color: var(–text); outline: none; transition: border-color 0.2s; -webkit-appearance: none; }
+.field-input { flex: 1; padding: 16px 18px; border: 2px solid var(--border); border-radius: 14px; background: #fafafa; font-family: 'Barlow', sans-serif; font-size: 18px; font-weight: 600; color: var(--text); outline: none; transition: border-color 0.2s; -webkit-appearance: none; }
 .field-input::placeholder { color: #ccc; font-weight: 400; }
-.field-input:focus { border-color: var(–yellow); background: #fff; }
+.field-input:focus { border-color: var(--yellow); background: #fff; }
 .btn-clear { width: 52px; height: 52px; border-radius: 14px; border: 2px solid #f0dede; background: #fff5f5; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
-.btn-clear:hover { border-color: var(–red); background: #ffe8e8; }
+.btn-clear:hover { border-color: var(--red); background: #ffe8e8; }
 
 /* RESULT CARD */
-.result-card { margin: 0 16px 16px; border: 2px solid var(–yellow); border-radius: 16px; overflow: hidden; }
-.rc-valor-row { background: #fffdf5; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(–border); }
+.result-card { margin: 0 16px 16px; border: 2px solid var(--yellow); border-radius: 16px; overflow: hidden; }
+.rc-valor-row { background: #fffdf5; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
 .rv-left { display: flex; align-items: center; gap: 8px; }
 .rv-icon { font-size: 18px; }
-.rv-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(–muted); }
-.rv-val { font-family: ‘Bebas Neue’, sans-serif; font-size: 22px; color: var(–yellow); letter-spacing: 1px; }
-.rc-disp-badge { background: var(–yellow); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 1px; padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
+.rv-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+.rv-val { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--yellow); letter-spacing: 1px; }
+.rc-disp-badge { background: var(--yellow); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 1px; padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
 
 /* TABELA */
 .rc-table { width: 100%; border-collapse: collapse; }
 .rc-table thead tr { background: #f5f5f5; }
-.rc-table thead th { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(–yellow); padding: 9px 14px; text-align: left; border-bottom: 1px solid var(–border); }
+.rc-table thead th { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--yellow); padding: 9px 14px; text-align: left; border-bottom: 1px solid var(--border); }
 .rc-table thead th:not(:first-child) { text-align: right; }
 .rc-table tbody tr { border-bottom: 1px solid #f0f0f0; }
 .rc-table tbody tr:last-child { border-bottom: none; }
 .rc-table tbody tr:hover { background: #fffdf5; }
 .rc-table tbody td { padding: 10px 14px; font-size: 13px; }
 .rc-table tbody td:not(:first-child) { text-align: right; }
-.td-parc { font-family: ‘Bebas Neue’, sans-serif; font-size: 16px; color: var(–yellow); }
-.td-vparcela { color: var(–muted); font-weight: 600; }
-.td-total { font-weight: 700; color: var(–text); }
-.td-juros { font-size: 12px; color: var(–red); font-weight: 600; }
+.td-parc { font-family: 'Bebas Neue', sans-serif; font-size: 16px; color: var(--yellow); }
+.td-vparcela { color: var(--muted); font-weight: 600; }
+.td-total { font-weight: 700; color: var(--text); }
+.td-juros { font-size: 12px; color: var(--red); font-weight: 600; }
 
-.rc-footer { background: #fffdf5; border-top: 1px solid var(–border); padding: 11px 16px; display: flex; align-items: center; justify-content: space-between; }
-.rf-left { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(–text); }
-.rf-right { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(–yellow); }
+.rc-footer { background: #fffdf5; border-top: 1px solid var(--border); padding: 11px 16px; display: flex; align-items: center; justify-content: space-between; }
+.rf-left { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text); }
+.rf-right { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--yellow); }
 
 /* BOTÃO COPIAR */
 .action-btns { padding: 0 16px; margin-bottom: 32px; }
-.abtn { width: 100%; padding: 16px; border-radius: 14px; border: 2px solid var(–yellow); background: var(–yellow); font-family: ‘Bebas Neue’, sans-serif; font-size: 20px; letter-spacing: 2px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.15s; }
-.abtn:hover { background: var(–yellow-light); border-color: var(–yellow-light); }
+.abtn { width: 100%; padding: 16px; border-radius: 14px; border: 2px solid var(--yellow); background: var(--yellow); font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.15s; }
+.abtn:hover { background: var(--yellow-light); border-color: var(--yellow-light); }
 .abtn:active { transform: scale(0.98); }
 
 /* TOAST */
 .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1a1a1a; color: #fff; padding: 12px 24px; border-radius: 30px; font-size: 14px; font-weight: 600; opacity: 0; transition: all 0.3s; z-index: 9999; white-space: nowrap; pointer-events: none; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
-
 </head>
 <body>
 
@@ -246,6 +244,5 @@ function limpar() {
   valAtual = 0;
 }
 </script>
-
 </body>
 </html>
