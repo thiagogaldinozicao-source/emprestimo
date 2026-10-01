@@ -140,6 +140,20 @@ const FATORES = {
 const fmt = v => v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 let valAtual = 0;
 
+// Monta as 18 linhas da simulação. Usada pela tabela da tela e pelo texto do WhatsApp.
+// cobrado = recebido × 1,20; parcela = cobrado × fator, arredondada nos centavos
+// (é o que a maquininha cobra), e o total é parcela × vezes.
+function simular(valor) {
+  const cobrado = valor * 1.20;
+  const linhas = [];
+  for (let n = 1; n <= 18; n++) {
+    const parcela = Math.round(cobrado * FATORES[n] * 100) / 100;
+    const total = parcela * n;
+    linhas.push({ n: n, parcela: parcela, total: total, juros: total - valor });
+  }
+  return linhas;
+}
+
 function calcular() {
   const val = parseFloat(document.getElementById('valorInput').value) || 0;
   valAtual = val;
@@ -152,20 +166,14 @@ function calcular() {
     return;
   }
 
-  const cobrado = val * 1.20;
-  let rows = '';
-  for (let n = 1; n <= 18; n++) {
-    // a maquininha cobra a parcela já arredondada, então o total é parcela × n
-    const parcela = Math.round(cobrado * FATORES[n] * 100) / 100;
-    const total   = parcela * n;
-    const juros   = total - val;
-    rows += '<tr>' +
-      '<td class="td-parc">' + n + 'x</td>' +
-      '<td class="td-vparcela">R$ ' + fmt(parcela) + '</td>' +
-      '<td class="td-total">R$ ' + fmt(total) + '</td>' +
-      '<td class="td-juros">+R$ ' + fmt(juros) + '</td>' +
+  const rows = simular(val).map(function (l) {
+    return '<tr>' +
+      '<td class="td-parc">' + l.n + 'x</td>' +
+      '<td class="td-vparcela">R$ ' + fmt(l.parcela) + '</td>' +
+      '<td class="td-total">R$ ' + fmt(l.total) + '</td>' +
+      '<td class="td-juros">+R$ ' + fmt(l.juros) + '</td>' +
       '</tr>';
-  }
+  }).join('');
 
   area.innerHTML =
     '<div class="result-card">' +
@@ -196,13 +204,9 @@ function calcular() {
 
 function gerarTexto() {
   if (!valAtual) return '';
-  const cobrado = valAtual * 1.20;
-  const linhas = [];
-  for (let n = 1; n <= 18; n++) {
-    const p = Math.round(cobrado * FATORES[n] * 100) / 100;
-    const total = p * n;
-    linhas.push({ n: n, p: fmt(p), total: fmt(total) });
-  }
+  const linhas = simular(valAtual).map(function (l) {
+    return { n: l.n, p: fmt(l.parcela), total: fmt(l.total) };
+  });
   const maxP     = Math.max.apply(null, linhas.map(function(l){ return l.p.length; }));
   const maxTotal = Math.max.apply(null, linhas.map(function(l){ return l.total.length; }));
 
