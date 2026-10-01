@@ -209,17 +209,18 @@ function gerarTexto() {
   const linhas = simular(valAtual).map(function (l) {
     return { n: l.n, p: fmt(l.parcela), total: fmt(l.total) };
   });
-  const maxP     = Math.max.apply(null, linhas.map(function(l){ return l.p.length; }));
-  const maxTotal = Math.max.apply(null, linhas.map(function(l){ return l.total.length; }));
+  // Colunas com largura fixa (o WhatsApp mostra ``` em fonte monoespaçada)
+  const colP = Math.max(7, Math.max.apply(null, linhas.map(function(l){ return l.p.length; })));
+  const colT = Math.max(5, Math.max.apply(null, linhas.map(function(l){ return l.total.length; })));
 
   var t = '*\u{1F4B3} SIMULAÇÃO DE EMPRÉSTIMO*\n\n';
   t += '*\u{1F4B5} Valor recebido: R$ ' + fmt(valAtual) + '*\n\n';
   t += '```\n';
-  t += 'Px.  ' + 'Parcela'.padStart(maxP) + '  ' + 'Total'.padStart(maxTotal) + '\n';
-  t += '\u2500'.repeat(5 + maxP + 2 + maxTotal) + '\n';
+  t += 'Px.   ' + 'Parcela'.padStart(colP) + '     ' + 'Total'.padStart(colT) + '\n';
+  t += '\u2500'.repeat(6 + colP + 5 + colT) + '\n';
   for (var i = 0; i < linhas.length; i++) {
     var l = linhas[i];
-    t += String(l.n).padStart(2,'0') + 'x   ' + l.p.padStart(maxP) + '  \u2502  ' + l.total.padStart(maxTotal) + '\n';
+    t += String(l.n).padStart(2,'0') + 'x   ' + l.p.padStart(colP) + '  \u2502  ' + l.total.padStart(colT) + '\n';
   }
   t += '```';
   return t;
