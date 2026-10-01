@@ -223,25 +223,41 @@ function gerarTexto() {
   return t;
 }
 
-function mostrarToast() {
+var toastTimer;
+function mostrarToast(msg) {
   var el = document.getElementById('toast');
+  el.textContent = msg;
   el.classList.add('show');
-  setTimeout(function(){ el.classList.remove('show'); }, 2500);
+  clearTimeout(toastTimer); // vários toques seguidos não fazem o aviso sumir antes da hora
+  toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2500);
+}
+
+// Jeito antigo de copiar: usado quando o navegador recusa o navigator.clipboard
+function copiaAntiga(txt) {
+  var ta = document.createElement('textarea');
+  ta.value = txt;
+  ta.setAttribute('readonly', '');
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  ta.setSelectionRange(0, txt.length); // necessário no iPhone
+  var ok = false;
+  try { ok = document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta);
+  mostrarToast(ok ? '✅ Texto copiado!' : '⚠️ Não copiou, tente de novo');
 }
 
 function copiarWhats() {
   var txt = gerarTexto();
-  if (!txt) return;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(txt).then(function(){ mostrarToast(); });
+  if (!txt) { mostrarToast('Digite um valor primeiro'); return; }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(
+      function(){ mostrarToast('✅ Texto copiado!'); },
+      function(){ copiaAntiga(txt); }
+    );
   } else {
-    var ta = document.createElement('textarea');
-    ta.value = txt;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    mostrarToast();
+    copiaAntiga(txt);
   }
 }
 
