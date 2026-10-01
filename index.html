@@ -104,7 +104,7 @@ header { padding: 18px 20px 6px; display: flex; align-items: center; justify-con
 <div class="section">
   <div class="field-label">💰 Valor que o cliente quer receber (R$)</div>
   <div class="input-row">
-    <input class="field-input" id="valorInput" type="number" placeholder="1000" min="1" step="1" oninput="calcular()">
+    <input class="field-input" id="valorInput" type="text" inputmode="decimal" autocomplete="off" placeholder="1000" oninput="calcular()">
     <button class="btn-clear" onclick="limpar()" title="Limpar">🗑️</button>
   </div>
 </div>
@@ -156,8 +156,18 @@ function simular(valor) {
   return linhas;
 }
 
+// Lê o que foi digitado aceitando o jeito brasileiro: "1500", "1.500", "1500,50", "1.500,50".
+// Devolve 0 se não for um valor válido maior que zero.
+function lerValor(txt) {
+  txt = String(txt).replace(/[^0-9.,]/g, '');
+  if (txt.indexOf(',') >= 0) txt = txt.replace(/\./g, '').replace(',', '.');
+  else if (/^\d{1,3}(\.\d{3})+$/.test(txt)) txt = txt.replace(/\./g, '');
+  const v = parseFloat(txt);
+  return isFinite(v) && v > 0 ? v : 0;
+}
+
 function calcular() {
-  const val = parseFloat(document.getElementById('valorInput').value) || 0;
+  const val = lerValor(document.getElementById('valorInput').value);
   valAtual = val;
   const area = document.getElementById('resultArea');
   const btns = document.getElementById('actionBtns');
