@@ -2,7 +2,7 @@
 // Página: busca na rede primeiro (pega atualização na hora) e usa a cópia salva se estiver sem sinal.
 // Resto (ícones, fontes): usa a cópia salva e atualiza por trás.
 // Ao mudar arquivos do app, aumente a VERSAO pra limpar o cache antigo.
-const VERSAO = 'emprestimo-v2';
+const VERSAO = 'emprestimo-v3';
 const ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './favicon.svg',
   './favicon-32.png', './apple-touch-icon.png', './icon-192.png', './icon-512.png', './logo-claro.png', './logo-escuro.png'];
 

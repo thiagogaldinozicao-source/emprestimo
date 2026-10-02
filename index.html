@@ -78,6 +78,12 @@ h1 {
 }
 h1 span { display: block; color: var(--gold-ink); }
 
+/* ABAS */
+.abas { display: grid; grid-template-columns: 1fr 1fr; border: 3px solid var(--line); border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
+.aba { border: 0; background: var(--surface); color: var(--muted); padding: 11px 6px 9px; font-size: 15px; font-weight: 700; cursor: pointer; }
+.aba + .aba { border-left: 3px solid var(--line); }
+.aba.on { background: var(--ink); color: var(--bg); }
+
 /* CAMPO DE VALOR */
 .campo-label { display: block; font-size: 14px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
 .input-row { display: flex; align-items: stretch; gap: 10px; }
@@ -167,7 +173,12 @@ h1 span { display: block; color: var(--gold-ink); }
 
 <h1>Simulação de<span>empréstimo</span></h1>
 
-<label class="campo-label" for="valorInput">Valor que o cliente quer receber</label>
+<div class="abas" role="tablist">
+  <button class="aba on" id="abaReceber" role="tab" onclick="trocarModo('receber')">Quero receber</button>
+  <button class="aba" id="abaLimite" role="tab" onclick="trocarModo('limite')">Tenho de limite</button>
+</div>
+
+<label class="campo-label" id="campoLabel" for="valorInput">Valor que o cliente quer receber</label>
 <div class="input-row">
   <div class="campo">
     <span class="rs">R$</span>
@@ -209,6 +220,7 @@ const FATORES = {
 const VAZIO = '<p class="vazio">Digite o valor pra ver as parcelas de 1x a 18x.</p>';
 const fmt = v => v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 let valAtual = 0;
+let modo = 'receber'; // 'receber' ou 'limite'
 
 // Monta as 18 linhas da simulação. Usada pela tabela da tela e pelo texto do WhatsApp.
 // cobrado = recebido × 1,20; parcela = cobrado × fator, arredondada nos centavos
@@ -220,6 +232,21 @@ function simular(valor) {
     const parcela = Math.round(cobrado * FATORES[n] * 100) / 100;
     const total = parcela * n;
     linhas.push({ n: n, parcela: parcela, total: total, juros: total - valor });
+  }
+  return linhas;
+}
+
+// Simulação reversa: o cliente tem X de limite (o que vai passar no cartão).
+// Pra cada vez: recebido = limite ÷ (1,20 × fator × vezes), cortado nos centavos,
+// e confere pela regra do simular que o total cabe no limite.
+function reverso(limite) {
+  const linhas = [];
+  for (let n = 1; n <= 18; n++) {
+    const totalDe = function (r) { return simular(r)[n - 1].total; };
+    let r = Math.floor(limite / (1.20 * FATORES[n] * n) * 100) / 100;
+    while (r > 0 && totalDe(r) > limite + 0.001) r = Math.round((r - 0.01) * 100) / 100;
+    const l = simular(r)[n - 1];
+    linhas.push({ n: n, recebe: r, parcela: l.parcela, total: l.total });
   }
   return linhas;
 }
@@ -246,6 +273,26 @@ function calcular() {
     return;
   }
 
+  if (modo === 'limite') {
+    const rowsL = reverso(val).map(function (l) {
+      return '<tr>' +
+        '<td class="td-parc">' + l.n + 'x</td>' +
+        '<td class="td-vparcela">R$ ' + fmt(l.recebe) + '</td>' +
+        '<td class="td-total">R$ ' + fmt(l.parcela) + '</td>' +
+        '</tr>';
+    }).join('');
+    area.innerHTML =
+      '<div class="result">' +
+        '<div class="res-head"><b>Passando R$ ' + fmt(val) + '</b><small>Até 18x</small></div>' +
+        '<table class="rc-table">' +
+          '<thead><tr><th>Vezes</th><th>Cliente pega</th><th>Parcela</th></tr></thead>' +
+          '<tbody>' + rowsL + '</tbody>' +
+        '</table>' +
+      '</div>';
+    btns.style.display = 'block';
+    return;
+  }
+
   const rows = simular(val).map(function (l) {
     return '<tr>' +
       '<td class="td-parc">' + l.n + 'x</td>' +
@@ -267,8 +314,39 @@ function calcular() {
   btns.style.display = 'block';
 }
 
+function trocarModo(m) {
+  modo = m;
+  document.getElementById('abaReceber').classList.toggle('on', m === 'receber');
+  document.getElementById('abaLimite').classList.toggle('on', m === 'limite');
+  document.getElementById('campoLabel').textContent = m === 'limite'
+    ? 'Limite do cartão (valor que vai passar)' : 'Valor que o cliente quer receber';
+  calcular();
+  document.getElementById('valorInput').focus();
+}
+
+function gerarTextoLimite() {
+  const linhas = reverso(valAtual).map(function (l) {
+    return { n: l.n, r: fmt(l.recebe), p: fmt(l.parcela) };
+  });
+  const colR = Math.max(6, Math.max.apply(null, linhas.map(function(l){ return l.r.length; })));
+  const colP = Math.max(7, Math.max.apply(null, linhas.map(function(l){ return l.p.length; })));
+
+  var t = '*\u{1F4B3} SIMULAÇÃO DE EMPRÉSTIMO*\n\n';
+  t += '*\u{1F4B3} Passando no cartão: R$ ' + fmt(valAtual) + '*\n\n';
+  t += '```\n';
+  t += 'Px.   ' + 'Recebe'.padStart(colR) + '     ' + 'Parcela'.padStart(colP) + '\n';
+  t += '\u2500'.repeat(6 + colR + 5 + colP) + '\n';
+  for (var i = 0; i < linhas.length; i++) {
+    var l = linhas[i];
+    t += String(l.n).padStart(2,'0') + 'x   ' + l.r.padStart(colR) + '  \u2502  ' + l.p.padStart(colP) + '\n';
+  }
+  t += '```';
+  return t;
+}
+
 function gerarTexto() {
   if (!valAtual) return '';
+  if (modo === 'limite') return gerarTextoLimite();
   const linhas = simular(valAtual).map(function (l) {
     return { n: l.n, p: fmt(l.parcela), total: fmt(l.total) };
   });
