@@ -2,121 +2,187 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>Simulação Empréstimo</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=2">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2">
 <link rel="manifest" href="manifest.webmanifest?v=2">
-<meta name="theme-color" content="#0A0A0B">
+<meta name="theme-color" content="#F7F6F2" id="metaTema">
+<meta name="color-scheme" content="light dark">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Empréstimo">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<script>
+// Aplica o tema escolhido antes de desenhar a tela (evita piscar)
+try { var t = localStorage.getItem('tema'); if (t === 'claro' || t === 'escuro') document.documentElement.setAttribute('data-theme', t === 'claro' ? 'light' : 'dark'); } catch (e) {}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* TEMA CLARO (padrão) */
 :root {
-  --yellow: #C9A84C; --yellow-light: #E2C06A;
-  --yellow-bg: rgba(201,168,76,0.08);
-  --bg: #ffffff; --border: #e0e0e0; --border-strong: #c5c5c5;
-  --text: #1a1a1a; --muted: #888888; --red: #e05252;
+  --bg: #F7F6F2; --surface: #FFFFFF; --ink: #141414; --muted: #6E6A62;
+  --line: #141414; --soft: #E4E1D9; --gold: #EBB533; --gold-ink: #8A6508;
+  --on-gold: #141414; --red: #C2410C; --shadow: #141414;
+  --logo-claro: block; --logo-escuro: none;
 }
-body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; min-height: 100vh; max-width: 480px; margin: 0 auto; }
+/* TEMA ESCURO: segue o sistema, a não ser que tenha forçado o claro */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121211; --surface: #1C1B19; --ink: #F4F1E8; --muted: #9A958A;
+    --line: #F4F1E8; --soft: #2C2A26; --gold: #EBB533; --gold-ink: #EBB533;
+    --on-gold: #141414; --red: #F28B5B; --shadow: #EBB533;
+    --logo-claro: none; --logo-escuro: block;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121211; --surface: #1C1B19; --ink: #F4F1E8; --muted: #9A958A;
+  --line: #F4F1E8; --soft: #2C2A26; --gold: #EBB533; --gold-ink: #EBB533;
+  --on-gold: #141414; --red: #F28B5B; --shadow: #EBB533;
+  --logo-claro: none; --logo-escuro: block;
+}
 
-/* HEADER */
-header { padding: 18px 20px 6px; display: flex; align-items: center; justify-content: space-between; }
-.logo-wrap { display: flex; flex-direction: column; }
-.logo-title { display: flex; align-items: center; gap: 8px; }
-.logo-icon { font-size: 22px; }
-.logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--yellow); letter-spacing: 2px; line-height: 1; white-space: nowrap; }
-.logo-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
-.hbtn { width: 44px; height: 44px; border-radius: 12px; border: 2px solid var(--border-strong); background: #fff; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0; margin-left: 12px; }
-.hbtn:hover { border-color: var(--yellow); background: var(--yellow-bg); }
+html { background: var(--bg); }
+body {
+  background: var(--bg); color: var(--ink); font-family: 'Barlow', sans-serif;
+  min-height: 100vh; max-width: 520px; margin: 0 auto;
+  padding: env(safe-area-inset-top) 16px calc(110px + env(safe-area-inset-bottom));
+  -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
+}
+button { font-family: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
 
-.divider { height: 2px; background: linear-gradient(to right, var(--yellow), var(--yellow-light), transparent); margin: 10px 0 20px; }
+/* TOPO */
+header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 0 14px; }
+.logo { height: 60px; width: auto; }
+.logo-claro { display: var(--logo-claro); }
+.logo-escuro { display: var(--logo-escuro); }
+.topo-btns { display: flex; gap: 8px; }
+.hbtn {
+  height: 44px; min-width: 44px; padding: 0 10px; border: 2px solid var(--line); border-radius: 10px;
+  background: var(--surface); font-size: 20px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  box-shadow: 3px 3px 0 var(--shadow); transition: transform .08s, box-shadow .08s;
+}
+.hbtn:active, .btn-clear:active, .abtn:active { transform: translate(3px,3px); box-shadow: 0 0 0 var(--shadow); }
+.hbtn .tema-txt { font-family: 'Bebas Neue', sans-serif; font-size: 17px; letter-spacing: 1px; padding-top: 2px; }
 
-/* INPUT */
-.section { padding: 0 16px; margin-bottom: 16px; }
-.field-label { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--yellow); margin-bottom: 8px; }
-.input-row { display: flex; align-items: center; gap: 10px; }
-.field-input { flex: 1; padding: 16px 18px; border: 2px solid var(--border); border-radius: 14px; background: #fafafa; font-family: 'Barlow', sans-serif; font-size: 18px; font-weight: 600; color: var(--text); outline: none; transition: border-color 0.2s; -webkit-appearance: none; }
-.field-input::placeholder { color: #ccc; font-weight: 400; }
-.field-input:focus { border-color: var(--yellow); background: #fff; }
-.btn-clear { width: 52px; height: 52px; border-radius: 14px; border: 2px solid #f0dede; background: #fff5f5; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
-.btn-clear:hover { border-color: var(--red); background: #ffe8e8; }
+h1 {
+  font-family: 'Bebas Neue', sans-serif; font-weight: 400; font-size: 44px; line-height: .9;
+  letter-spacing: .5px; border-top: 4px solid var(--line); padding-top: 12px; margin-bottom: 18px;
+}
+h1 span { display: block; color: var(--gold-ink); }
 
-/* RESULT CARD */
-.result-card { margin: 0 16px 16px; border: 2px solid var(--yellow); border-radius: 16px; overflow: hidden; }
-.rc-valor-row { background: #fffdf5; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
-.rv-left { display: flex; align-items: center; gap: 8px; }
-.rv-icon { font-size: 18px; }
-.rv-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
-.rv-val { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--yellow); letter-spacing: 1px; }
-.rc-disp-badge { background: var(--yellow); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 1px; padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
+/* CAMPO DE VALOR */
+.campo-label { display: block; font-size: 14px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+.input-row { display: flex; align-items: stretch; gap: 10px; }
+.campo {
+  flex: 1; display: flex; align-items: baseline; gap: 8px; min-width: 0;
+  border: 3px solid var(--line); border-radius: 12px; background: var(--surface); padding: 6px 14px 2px;
+  box-shadow: 5px 5px 0 var(--gold);
+}
+.campo:focus-within { box-shadow: 5px 5px 0 var(--shadow); }
+.campo .rs { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: var(--muted); }
+.field-input {
+  flex: 1; min-width: 0; border: 0; background: transparent; outline: none; color: var(--ink);
+  font-family: 'Bebas Neue', sans-serif; font-size: 56px; line-height: 1.05; letter-spacing: 1px;
+  -webkit-appearance: none;
+}
+.field-input::placeholder { color: var(--soft); }
+.btn-clear {
+  width: 62px; flex-shrink: 0; border: 3px solid var(--line); border-radius: 12px;
+  background: var(--surface); font-size: 24px; cursor: pointer; box-shadow: 5px 5px 0 var(--shadow);
+  transition: transform .08s, box-shadow .08s;
+}
 
 /* TABELA */
-.rc-table { width: 100%; border-collapse: collapse; }
-.rc-table thead tr { background: #f5f5f5; }
-.rc-table thead th { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--yellow); padding: 9px 14px; text-align: left; border-bottom: 1px solid var(--border); }
-.rc-table thead th:not(:first-child) { text-align: right; }
-.rc-table tbody tr { border-bottom: 1px solid #f0f0f0; }
-.rc-table tbody tr:last-child { border-bottom: none; }
-.rc-table tbody tr:hover { background: #fffdf5; }
-.rc-table tbody td { padding: 10px 14px; font-size: 13px; }
-.rc-table tbody td:not(:first-child) { text-align: right; }
-.td-parc { font-family: 'Bebas Neue', sans-serif; font-size: 16px; color: var(--yellow); }
-.td-vparcela { color: var(--muted); font-weight: 600; }
-.td-total { font-weight: 700; color: var(--text); }
-.td-juros { font-size: 12px; color: var(--red); font-weight: 600; }
+.vazio { margin-top: 28px; color: var(--muted); font-size: 15px; line-height: 1.5; }
+.result { margin-top: 26px; border: 3px solid var(--line); border-radius: 12px; background: var(--surface); overflow: hidden; }
+.res-head {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
+  background: var(--gold); color: var(--on-gold); padding: 10px 14px 8px; border-bottom: 3px solid var(--line);
+}
+.res-head b { font-family: 'Bebas Neue', sans-serif; font-weight: 400; font-size: 26px; letter-spacing: .5px; }
+.res-head small { font-size: 13px; font-weight: 700; }
+.rc-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.rc-table th {
+  font-size: 12px; font-weight: 700; color: var(--muted); text-align: right;
+  padding: 10px 12px 6px; border-bottom: 2px solid var(--soft);
+}
+.rc-table th:first-child, .rc-table td:first-child { text-align: left; }
+.rc-table td { padding: 9px 12px; text-align: right; border-bottom: 1px solid var(--soft); vertical-align: baseline; }
+.rc-table tr:last-child td { border-bottom: 0; }
+.td-parc { font-family: 'Bebas Neue', sans-serif; font-size: 28px; line-height: 1; color: var(--gold-ink); width: 1%; white-space: nowrap; }
+.td-vparcela { font-size: 18px; font-weight: 800; white-space: nowrap; }
+.td-total { font-size: 14px; font-weight: 500; color: var(--muted); white-space: nowrap; }
+.td-juros { font-size: 13px; font-weight: 600; color: var(--red); white-space: nowrap; }
 
-.rc-footer { background: #fffdf5; border-top: 1px solid var(--border); padding: 11px 16px; display: flex; align-items: center; justify-content: space-between; }
-.rf-left { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text); }
-.rf-right { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--yellow); }
+/* BOTÃO COPIAR (fixo embaixo) */
+.action-btns {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+  padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, var(--bg) 70%, transparent);
+}
+.abtn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; max-width: 488px; margin: 0 auto; padding: 14px 16px 11px;
+  border: 3px solid var(--line); border-radius: 12px; background: var(--gold); color: var(--on-gold);
+  font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 1.5px; cursor: pointer;
+  box-shadow: 5px 5px 0 var(--line); transition: transform .08s, box-shadow .08s;
+}
+.abtn:active { box-shadow: 0 0 0 var(--line); transform: translate(5px,5px); }
 
-/* BOTÃO COPIAR */
-.action-btns { padding: 0 16px; margin-bottom: 32px; }
-.abtn { width: 100%; padding: 16px; border-radius: 14px; border: 2px solid var(--yellow); background: var(--yellow); font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.15s; }
-.abtn:hover { background: var(--yellow-light); border-color: var(--yellow-light); }
-.abtn:active { transform: scale(0.98); }
-
-/* TOAST */
-.toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1a1a1a; color: #fff; padding: 12px 24px; border-radius: 30px; font-size: 14px; font-weight: 600; opacity: 0; transition: all 0.3s; z-index: 9999; white-space: nowrap; pointer-events: none; }
+/* AVISO */
+.toast {
+  position: fixed; left: 50%; bottom: calc(100px + env(safe-area-inset-bottom)); z-index: 20;
+  transform: translateX(-50%) translateY(16px); opacity: 0; pointer-events: none; white-space: nowrap;
+  background: var(--ink); color: var(--bg); border: 2px solid var(--gold);
+  padding: 11px 22px; border-radius: 10px; font-size: 15px; font-weight: 700; transition: all .25s;
+}
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media (max-width: 360px) {
+  .field-input { font-size: 46px; }
+  .td-vparcela { font-size: 16px; }
+  .rc-table td, .rc-table th { padding-left: 8px; padding-right: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo-wrap">
-    <div class="logo-title">
-      <span class="logo-icon">💳</span>
-      <span class="logo-text">SIMULAÇÃO EMPRÉSTIMO</span>
-    </div>
-    <div class="logo-sub">Digite o valor e copie para o WhatsApp</div>
+  <img class="logo logo-claro" src="logo-claro.png" alt="Zicão Store" width="900" height="397">
+  <img class="logo logo-escuro" src="logo-escuro.png" alt="Zicão Store" width="900" height="397">
+  <div class="topo-btns">
+    <button class="hbtn" id="btnTema" onclick="trocarTema()" title="Trocar tema"><span id="temaIcone">◐</span><span class="tema-txt" id="temaTxt">AUTO</span></button>
+    <button class="hbtn" onclick="copiarWhats()" title="Copiar para WhatsApp" aria-label="Copiar para WhatsApp">📋</button>
   </div>
-  <button class="hbtn" onclick="copiarWhats()" title="Copiar para WhatsApp">📋</button>
 </header>
 
-<div class="divider"></div>
+<h1>Simulação de<span>empréstimo</span></h1>
 
-<div class="section">
-  <div class="field-label">💰 Valor que o cliente quer receber (R$)</div>
-  <div class="input-row">
-    <input class="field-input" id="valorInput" type="text" inputmode="decimal" autocomplete="off" placeholder="1000" oninput="calcular()">
-    <button class="btn-clear" onclick="limpar()" title="Limpar">🗑️</button>
+<label class="campo-label" for="valorInput">Valor que o cliente quer receber</label>
+<div class="input-row">
+  <div class="campo">
+    <span class="rs">R$</span>
+    <input class="field-input" id="valorInput" type="text" inputmode="decimal" autocomplete="off" placeholder="1.000" oninput="calcular()">
   </div>
+  <button class="btn-clear" onclick="limpar()" title="Limpar" aria-label="Limpar">🗑️</button>
 </div>
 
-<div id="resultArea"></div>
+<div id="resultArea"><p class="vazio">Digite o valor pra ver as parcelas de 1x a 18x.</p></div>
 
 <div class="action-btns" id="actionBtns" style="display:none">
-  <button class="abtn" onclick="copiarWhats()">📋 &nbsp;COPIAR PARA WHATSAPP</button>
+  <button class="abtn" onclick="copiarWhats()">📋 Copiar para WhatsApp</button>
 </div>
 
-<div class="toast" id="toast">✅ Texto copiado!</div>
+<div class="toast" id="toast" role="status">✅ Texto copiado!</div>
 
 <script>
 const FATORES = {
@@ -140,6 +206,7 @@ const FATORES = {
   18: 0.05840833,
 };
 
+const VAZIO = '<p class="vazio">Digite o valor pra ver as parcelas de 1x a 18x.</p>';
 const fmt = v => v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 let valAtual = 0;
 
@@ -174,7 +241,7 @@ function calcular() {
   const btns = document.getElementById('actionBtns');
 
   if (!val || val <= 0) {
-    area.innerHTML = '';
+    area.innerHTML = VAZIO;
     btns.style.display = 'none';
     return;
   }
@@ -184,32 +251,17 @@ function calcular() {
       '<td class="td-parc">' + l.n + 'x</td>' +
       '<td class="td-vparcela">R$ ' + fmt(l.parcela) + '</td>' +
       '<td class="td-total">R$ ' + fmt(l.total) + '</td>' +
-      '<td class="td-juros">+R$ ' + fmt(l.juros) + '</td>' +
+      '<td class="td-juros">+' + fmt(l.juros) + '</td>' +
       '</tr>';
   }).join('');
 
   area.innerHTML =
-    '<div class="result-card">' +
-      '<div class="rc-valor-row">' +
-        '<div class="rv-left">' +
-          '<span class="rv-icon">💳</span>' +
-          '<div>' +
-            '<div class="rv-label">Parcelando</div>' +
-            '<div class="rv-val">R$ ' + fmt(val) + '</div>' +
-          '</div>' +
-        '</div>' +
-        '<span class="rc-disp-badge">18X DISPONÍVEL</span>' +
-      '</div>' +
+    '<div class="result">' +
+      '<div class="res-head"><b>Recebe R$ ' + fmt(val) + '</b><small>Até 18x</small></div>' +
       '<table class="rc-table">' +
-        '<thead><tr>' +
-          '<th>Parc.</th><th>Valor/Parc.</th><th>Total</th><th>Juros</th>' +
-        '</tr></thead>' +
+        '<thead><tr><th>Vezes</th><th>Parcela</th><th>Total</th><th>Juros</th></tr></thead>' +
         '<tbody>' + rows + '</tbody>' +
       '</table>' +
-      '<div class="rc-footer">' +
-        '<span class="rf-left">📲 Fale para fechar negócio</span>' +
-        '<span class="rf-right">🏆 Melhor taxa</span>' +
-      '</div>' +
     '</div>';
 
   btns.style.display = 'block';
@@ -277,10 +329,35 @@ function copiarWhats() {
 
 function limpar() {
   document.getElementById('valorInput').value = '';
-  document.getElementById('resultArea').innerHTML = '';
+  document.getElementById('resultArea').innerHTML = VAZIO;
+  document.getElementById('valorInput').focus();
   document.getElementById('actionBtns').style.display = 'none';
   valAtual = 0;
 }
+
+// TEMA: auto (segue o Mac/iPhone) → claro → escuro → auto
+var TEMAS = { auto: ['◐', 'AUTO'], claro: ['☀️', 'CLARO'], escuro: ['🌙', 'ESCURO'] };
+var temaAtual = 'auto';
+try { temaAtual = localStorage.getItem('tema') || 'auto'; } catch (e) {}
+if (!TEMAS[temaAtual]) temaAtual = 'auto';
+var sistemaEscuro = window.matchMedia('(prefers-color-scheme: dark)');
+
+function aplicarTema() {
+  var html = document.documentElement;
+  if (temaAtual === 'auto') html.removeAttribute('data-theme');
+  else html.setAttribute('data-theme', temaAtual === 'claro' ? 'light' : 'dark');
+  var escuro = temaAtual === 'escuro' || (temaAtual === 'auto' && sistemaEscuro.matches);
+  document.getElementById('metaTema').setAttribute('content', escuro ? '#121211' : '#F7F6F2');
+  document.getElementById('temaIcone').textContent = TEMAS[temaAtual][0];
+  document.getElementById('temaTxt').textContent = TEMAS[temaAtual][1];
+}
+function trocarTema() {
+  temaAtual = temaAtual === 'auto' ? 'claro' : temaAtual === 'claro' ? 'escuro' : 'auto';
+  try { localStorage.setItem('tema', temaAtual); } catch (e) {}
+  aplicarTema();
+}
+if (sistemaEscuro.addEventListener) sistemaEscuro.addEventListener('change', aplicarTema);
+aplicarTema();
 
 // Guarda o app no celular pra abrir sem internet (ver sw.js)
 if ('serviceWorker' in navigator) {
